@@ -1,5 +1,9 @@
+/**
+ * Book Model
+ * Create structure of Book model
+ */
+
 const mongoose = require('mongoose');
-const { v4: uuidv4 } = require('uuid');
 
 const BookSchema = new mongoose.Schema({
     title: { type: String, required: true },

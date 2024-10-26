@@ -7,6 +7,7 @@ const bookRoutes = require('../routes/bookRoutes');
 const authorRoutes = require('../routes/authorRoutes');
 const subjectRoutes = require('../routes/subjectRoutes');
 const languageRoutes = require('../routes/languageRoutes')
+const pictureRoutes = require('../routes/pictureRoutes');
 const { errorHandler } = require('../middleware/errorHandler');
 
 const express = require('express');
@@ -19,6 +20,7 @@ app.use('/books', bookRoutes);
 app.use('/authors', authorRoutes);
 app.use('/subjects', subjectRoutes);
 app.use('/languages', languageRoutes)
+app.use('/pictures', pictureRoutes);
 
 // Error handler
 app.use(errorHandler);

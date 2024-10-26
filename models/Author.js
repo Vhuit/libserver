@@ -1,6 +1,12 @@
+/**
+ * Author model
+ * create a structure for the author collection in the database
+ * 
+ */
+
 const mongoose = require('mongoose');
 
-const AuthorSchema = new mongoose.Schema ({
+const AuthorSchema = new mongoose.Schema({
     authorName: { type: String, required: true },
     birthday: { type: String },
     authorBio: { type: String },

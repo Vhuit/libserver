@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const gridfsStream = require('fridfs-stream');
 
+// For storing files in MongoDB (may be not the best idea)
+
 let gfs;
 
 const initGridFS = () => {
