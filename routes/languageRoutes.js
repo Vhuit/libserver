@@ -1,5 +1,13 @@
 const express = require('express');
-const { getLanguages, getLangByAbr, getLanguage, getLangByName, addLanguage, updateLanguage, deleteLanguage } = require('../controllers/languageController');
+const {
+    getLanguages,
+    getLangByAbr,
+    getLanguage,
+    getLangByName,
+    addLanguage,
+    updateLanguage,
+    deleteLanguage
+} = require('../controllers/languageController');
 const router = express.Router();
 
 router.get('/', getLanguages);

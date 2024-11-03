@@ -42,6 +42,16 @@ exports.addAuthor = async (req, res, next) => {
             birthday,
             authorBio
         } = req.body;
+
+        // Check if the author already exists
+        const existingAuthor = await Author.findOne({
+            authorName,
+            birthday
+        });
+        if (existingAuthor) {
+            return res.status(409).json("Author already exists");
+        }
+
         const newAuthor = new Author({
             authorName,
             birthday,
@@ -52,10 +62,9 @@ exports.addAuthor = async (req, res, next) => {
         res.status(201).json(newAuthor);
     } catch (error) {
         res.status(500).json({ error: error.message });
-        next();
+        next(error);
     }
 }
-
 
 // Get all Author
 exports.getAuthors = async (req, res, next) => {
@@ -71,16 +80,23 @@ exports.getAuthors = async (req, res, next) => {
 // Update Author by ID
 exports.updateAuthor = async (req, res, next) => {
     try {
-        const updateAuthor = await Author.findByIdAndUpdate(req.params.id, req.body);
+        const updatingBody = req.body;
+        const updateAuthor = await Author.findById(req.params.id);
         if (!updateAuthor)
             return res.status(404).json("Author not found");
+        updateAuthor.authorName = updatingBody.authorName;
+        updateAuthor.birthday = updatingBody.birthday;
+        updateAuthor.authorBio = updatingBody.authorBio;
+        updateAuthor.updatedAt = Date.now();
+        await updateAuthor.save();
         res.status(200).json(updateAuthor);
     } catch (error) {
         res.status(500).json({ error: error.message });
-        next();
+        next(error);
     }
 };
 
+// Delete Author by ID
 exports.deleteAuthor = async (req, res, next) => {
     try {
         console.log(req.params.id);
@@ -94,6 +110,7 @@ exports.deleteAuthor = async (req, res, next) => {
     }
 }
 
+// Get author by ID
 exports.getAuthorByID = async (req, res, next) => {
     try {
         const getAuthByID = await Author.findById(req.params.id);
@@ -107,7 +124,7 @@ exports.getAuthorByID = async (req, res, next) => {
 }
 
 // get author by name and birthyear
-exports.getAuthorByNameAndYear = async (req, res, next) => {
+exports.getAuthorByName = async (req, res, next) => {
     try {
         const { authorName, birthyear } = req.params;
         const author = await Author.findOne({ author: authorName });

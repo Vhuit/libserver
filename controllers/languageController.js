@@ -58,9 +58,14 @@ exports.getLanguages = async (req, res, next) => {
 // Update Language by ID
 exports.updateLanguage = async (req, res, next) => {
     try {
-        const language = await Language.findByIdAndUpdate(req.params.id, req.body);
+        const updatingBody = req.body;
+        const language = await Language.findById(req.params.id);
         if (!language)
             return res.status(404).json("Language not found");
+        language.language = updatingBody.language;
+        language.abriviation = updatingBody.abriviation;
+        language.updatedAt = Date.now();
+        await language.save();
         res.status(200).json(language);
     } catch (error) {
         next(error);

@@ -14,7 +14,6 @@ const PictureSchema = new mongoose.Schema({
     {
         size: { type: Number },
         fileFormat: { type: String },
-        
     },
     filePath: { type: String, required: true },
     category: {

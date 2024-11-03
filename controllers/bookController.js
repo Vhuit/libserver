@@ -94,7 +94,7 @@ exports.addBook = async (req, res, next) => {
   }
 };
 
-
+// get all books to API
 exports.getAllBooks = async (req, res, next) => {
   try {
     const books = await Book.find()
@@ -103,26 +103,54 @@ exports.getAllBooks = async (req, res, next) => {
       .populate('languages', '_id language');
     res.status(200).json(books);
   } catch (error) {
-    res.status(500).json({ error: error.message });
     next(error);
   }
 };
 
+// update book by ID from PUT request
 exports.updateBook = async (req, res, next) => {
   try {
-    const updateBook = await Book.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
+    const body = req.body;
+    const updateBook = await Book.findById(req.params.id);
     if (!updateBook) {
       return res.status(404).json({ error: "Book not found" });
     }
+    const existing = await Book.findOne({
+      title: { $regex: new RegExp(body.title, 'i') },
+      isbn: body.isbn,
+      callNumber: body.callNumber,
+      seriesTitle: body.seriesTitle,
+      authors: body.authors,
+      subjects: body.subjects
+    })
+    if (existing && existing._id.toString() !== req.params.id) {
+      return res.status(404).json({ error: "The same information exists" })
+    }
+    updateBook.title = body.title;
+    updateBook.isbn = body.isbn;
+    updateBook.callNumber = body.callNumber;
+    updateBook.publishedYear = body.publishedYear;
+    updateBook.collation = body.collation;
+    updateBook.classification = body.classification;
+    updateBook.contentType = body.contentType;
+    updateBook.mediaType = body.mediaType;
+    updateBook.carrierType = body.carrierType;
+    updateBook.edition = body.edition;
+    updateBook.specialDetailInfo = body.specialDetailInfo;
+    updateBook.statementOfResp = body.statementOfResp;
+    updateBook.fileAttached = body.fileAttached;
+    updateBook.authors = body.authors;
+    updateBook.subjects = body.subjects;
+    updateBook.languages = body.languages;
+    updateBook.updatedAt = Date.now();
+    await updateBook.save();
     res.status(200).json(updateBook);
   } catch (error) {
-    res.status(500).json({ error: error.message });
     next(error);
   }
 };
 
+// delete a book by ID
 exports.deleteBook = async (req, res, next) => {
   try {
     const deleteBook = await Book.findByIdAndDelete(
@@ -132,19 +160,21 @@ exports.deleteBook = async (req, res, next) => {
       return res.status(404).json("Book not found");
     res.status(200).json({ message: "Book deleted successfully" });
   } catch (error) {
-    res.status(500).json({ error: "Server error" });
     next(error);
   }
 }
 
+// Find a book by its ID
 exports.getBookByID = async (req, res, next) => {
   try {
-    const findBookByID = await Book.findById(req.params.id);
+    const findBookByID = await Book.findById(req.params.id)
+      .populate('authors', '_id authorName')
+      .populate('subjects', '_id subjectName')
+      .populate('languages', '_id language');
     if (!findBookByID)
       return res.status(404).json({ error: "Book not found" });
     res.status(200).json(findBookByID);
   } catch (error) {
-    res.status(500).json({ error: error.message });
     next(error);
   }
 }
@@ -162,7 +192,159 @@ exports.getBookByTitle = async (req, res, next) => {
     }
     res.status(200).json(bookFound);
   } catch (error) {
-    res.status(500).json({ error: error.message });
     next(error);
   }
 }
+
+// get book by ISBN
+exports.getBookByISBN = async (req, res, next) => {
+  try {
+    const bookFound = await Book.find({
+      isbn: req.params.isbn
+    }).populate('authors', '_id authorName')
+      .populate('subjects', '_id subjectName')
+      .populate('languages', '_id language');
+    if (!bookFound.length) {
+      return res.status(404).json({ error: "Book not found" });
+    }
+    res.status(200).json(bookFound);
+  } catch (error) {
+    next(error);
+  }
+}
+
+// get Book by call number
+exports.getBookByCallNumber = async (req, res, next) => {
+  try {
+    const bookFound = await Book.find({
+      callNumber: req.params.callN
+    }).populate('authors', '_id authorName')
+      .populate('subjects', '_id subjectName')
+      .populate('languages', '_id language');
+    if (!bookFound.length) {
+      return res.status(404).json({ error: "Book not found" });
+    }
+    res.status(200).json(bookFound);
+  } catch (error) {
+    next(error);
+  }
+}
+
+// get books by author ID
+exports.getBooksByAuthorID = async (req, res, next) => {
+  try {
+    const books = await Book.find({
+      authors: req.params.auID
+    }).populate('authors', '_id authorName')
+      .populate('subjects', '_id subjectName')
+      .populate('languages', '_id language');
+    if (!books.length) {
+      return res.status(404).json({ error: "Books not found" });
+    }
+    res.status(200).json(books);
+  } catch (error) {
+    next(error);
+  }
+}
+
+// get books by subject ID
+exports.getBooksBySubjectID = async (req, res, next) => {
+  try {
+    const books = await Book.find({
+      subjects: req.params.subjD
+    }).populate('authors', '_id authorName')
+      .populate('subjects', '_id subjectName')
+      .populate('languages', '_id language');
+    if (!books.length) {
+      return res.status(404).json({ error: "Books not found" });
+    }
+    res.status(200).json(books);
+  } catch (error) {
+    next(error);
+  }
+}
+
+// get books by language ID
+exports.getBooksByLanguageID = async (req, res, next) => {
+  try {
+    const books = await Book.find({
+      languages: req.params.lang
+    }).populate('authors', '_id authorName')
+      .populate('subjects', '_id subjectName')
+      .populate('languages', '_id language');
+    if (!books.length) {
+      return res.status(404).json({ error: "Books not found" });
+    }
+    res.status(200).json(books);
+  } catch (error) {
+    next(error);
+  }
+}
+
+// get books by publisher ID
+exports.getBooksByPublisherID = async (req, res, next) => {
+  try {
+    const books = await Book.find({
+      publisherID: req.params.pubID
+    }).populate('authors', '_id authorName')
+      .populate('subjects', '_id subjectName')
+      .populate('languages', '_id language');
+    if (!books.length) {
+      return res.status(404).json({ error: "Books not found" });
+    }
+    res.status(200).json(books);
+  } catch (error) {
+    next(error);
+  }
+}
+
+// get books by published year
+exports.getBooksByPublishedYear = async (req, res, next) => {
+  try {
+    const books = await Book.find({
+      publishedYear: req.params.pubYear
+    }).populate('authors', '_id authorName')
+      .populate('subjects', '_id subjectName')
+      .populate('languages', '_id language');
+    if (!books.length) {
+      return res.status(404).json({ error: "Books not found" });
+    }
+    res.status(200).json(books);
+  } catch (error) {
+    next(error);
+  }
+}
+
+// get books by classification
+exports.getBooksByClassification = async (req, res, next) => {
+  try {
+    const books = await Book.find({
+      classification: req.params.class
+    }).populate('authors', '_id authorName')
+      .populate('subjects', '_id subjectName')
+      .populate('languages', '_id language');
+    if (!books.length) {
+      return res.status(404).json({ error: "Books not found" });
+    }
+    res.status(200).json(books);
+  } catch (error) {
+    next(error);
+  }
+}
+
+// get books by series title
+exports.getBooksBySeriesTitle = async (req, res, next) => {
+  try {
+    const books = await Book.find({
+      seriesTitle: req.params.sTitle
+    }).populate('authors', '_id authorName')
+      .populate('subjects', '_id subjectName')
+      .populate('languages', '_id language');
+    if (!books.length) {
+      return res.status(404).json({ error: "Books not found" });
+    }
+    res.status(200).json(books);
+  } catch (error) {
+    next(error);
+  }
+} // Checking again

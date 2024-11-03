@@ -8,6 +8,8 @@ const authorRoutes = require('../routes/authorRoutes');
 const subjectRoutes = require('../routes/subjectRoutes');
 const languageRoutes = require('../routes/languageRoutes')
 const pictureRoutes = require('../routes/pictureRoutes');
+const publisherRoutes = require('../routes/publisherRoutes');
+const seriesTitleRoutes = require('../routes/seriesTitleRoutes')
 const { errorHandler } = require('../middleware/errorHandler');
 
 const express = require('express');
@@ -21,6 +23,8 @@ app.use('/authors', authorRoutes);
 app.use('/subjects', subjectRoutes);
 app.use('/languages', languageRoutes)
 app.use('/pictures', pictureRoutes);
+app.use('/publishers', publisherRoutes);
+app.use('/series', seriesTitleRoutes);
 
 // Error handler
 app.use(errorHandler);

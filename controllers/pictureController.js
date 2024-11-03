@@ -45,7 +45,6 @@ exports.addPicture = async (req, res, next) => {
             {
                 size: file.size,
                 fileFormat: path.extname(file.originalname)
-
             },
             filePath: file.path,
             category,
@@ -87,12 +86,11 @@ exports.getAllPictures = async (req, res, next) => {
 }
 
 // get picture by RefEntity, category and isUsed
-exports.getPictureForEntity = async (req, res, next) => {
+exports.getIsUsedPictureForEntity = async (req, res, next) => {
     try {
-        const { relatedEntity, category } = req.params;
+        const { refID } = req.params;
         const picture = await Picture.findOne({
-            relatedEntity: relatedEntity,
-            category: category,
+            relatedEntity: refID,
             isUsed: true
         })
         if (!picture) {
@@ -101,6 +99,21 @@ exports.getPictureForEntity = async (req, res, next) => {
         res.status(200).json(picture);
     } catch (error) {
         res.status(500).json({ error: error.message });
+        next(error);
+    }
+}
+
+// get all pictures by RefEntity.
+exports.getAllPicForEntity = async (req, res, next) => {
+    try {
+        const pictures = await Picture.find({
+            relatedEntity: req.params.refID
+        });
+        if (!pictures) {
+            res.status(404).json({ message: 'Pictures not found' });
+        }
+        res.status(200).json(pictures);
+    } catch (error) {
         next(error);
     }
 }
@@ -182,7 +195,6 @@ exports.updatePicDetails = async (req, res, next) => {
     }
 }
 
-
 // get all pictures by entity
 exports.getPicsByEnti = async (req, res, next) => {
     try {
@@ -227,4 +239,4 @@ exports.updatePicIsUsed = async (req, res, next) => {
         res.status(500).json({ error: error.message });
         next(error);
     }
-}
+} 

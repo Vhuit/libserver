@@ -1,5 +1,13 @@
 const express = require('express');
-const { addAuthor, getAuthors, updateAuthor, deleteAuthor, getAuthorByID } = require('../controllers/authorController');
+// Import request handlers from author controller
+const {
+    addAuthor,
+    getAuthors,
+    updateAuthor,
+    deleteAuthor,
+    getAuthorByID,
+    getAuthorByName
+} = require('../controllers/authorController');
 const router = express.Router();
 
 // Add a book
@@ -18,6 +26,6 @@ router.delete('/:id', deleteAuthor);
 router.get('/:id', getAuthorByID);
 
 // Get Author by Name and Birthday
-router.get('/exist/:authorName/:birthyear', getAuthorByID);
+router.get('/name/:authorName', getAuthorByName);
 
 module.exports = router;

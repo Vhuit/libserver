@@ -5,10 +5,25 @@
 
 const express = require('express');
 const router = express.Router();
-const { addPicture, getAllPictures, getPicsByCate, getPicByID, getPictureForEntity, deletePicture, updatePicDetails, updatePicIsUsed } = require('../controllers/pictureController');
+const { addPicture, getAllPictures, getPicsByCate, getPicByID, getPictureForEntity, deletePicture, updatePicDetails, updatePicIsUsed, getIsUsedPictureForEntity, getAllPicForEntity } = require('../controllers/pictureController');
 const uploadPicture = require('../middleware/pictureHandler');
 
-// ROute to upload and add picture metadata
+// Route to upload and add picture metadata
+/**
+ * This route receives a file and a JSON object
+ * The JSON object must contain the following fields:
+ * {
+ * "relatedEntity": "string",
+ * "categoryRef": "string"
+ * "category": "string",
+ * "description": "string"
+ * "title": "string",
+ * },
+ * The file must be sent as a form-data with the key 'file'
+ * categoryRef must be one of the following: 'Book', 'Author', 'Publisher', 'Subject', 'User'
+ * category must be one of the following: 'bookCover', 'userProfile', 'authorProfile', 
+ * 'publisherLogo', 'subjectImage', 'pageDecoration'
+ */
 router.post('/', uploadPicture.single('file'), addPicture);
 
 // Get all picture metadata
@@ -25,7 +40,10 @@ router.get('/cate/:category', getPicsByCate);
  * If response is 404, it means the picture is not found
  * The default pic must be set in the frontend
  */
-router.get('/enti-used/:relatedEntity/:category', getPictureForEntity);
+router.get('/enti-used/:refID/', getIsUsedPictureForEntity);
+
+// get All pictures by RefEntity.
+router.get('/enti/:refID', getAllPicForEntity);
 
 // Delete picture by ID
 router.delete('/:id', deletePicture);
