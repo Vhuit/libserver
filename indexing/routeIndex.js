@@ -10,6 +10,8 @@ const languageRoutes = require('../routes/languageRoutes')
 const pictureRoutes = require('../routes/pictureRoutes');
 const publisherRoutes = require('../routes/publisherRoutes');
 const seriesTitleRoutes = require('../routes/seriesTitleRoutes')
+const topicRoutes = require('../routes/topicRoutes');
+const subTopicRoutes = require('../routes/subTopicRoutes');
 const { errorHandler } = require('../middleware/errorHandler');
 
 const express = require('express');
@@ -25,6 +27,8 @@ app.use('/languages', languageRoutes)
 app.use('/pictures', pictureRoutes);
 app.use('/publishers', publisherRoutes);
 app.use('/series', seriesTitleRoutes);
+app.use('/topics', topicRoutes);
+app.use('/sub-top', subTopicRoutes);
 
 // Error handler
 app.use(errorHandler);

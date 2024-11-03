@@ -35,6 +35,8 @@ const BookSchema = new mongoose.Schema({
             ref: 'Language'
         }
     ],
+    label: String,
+    subTopic: { type: mongoose.Schema.Types.ObjectId, ref: 'SubTopic' },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 }, { timestamps: true });

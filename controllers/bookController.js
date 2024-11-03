@@ -3,8 +3,13 @@ const { addAuthors } = require("./authorController");
 const { addSubjects } = require("./subjectController");
 const { addLanguages } = require("./languageController");
 const { default: mongoose } = require("mongoose");
+const { addSeriesTitleFromBook } = require("./seriesTitleController");
+const { automatedAddPublisher } = require("./publisherController");
+const SeriesTitle = require("../models/SeriesTitle");
 
 // add new book
+
+// Implement Subtopic and label to the book (pending)
 exports.addBook = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -14,9 +19,10 @@ exports.addBook = async (req, res, next) => {
       title,
       authors = [],
       isbn,
+      seriesTitle,
       callNumber,
       publishedYear,
-      publisherID,
+      publisher,
       collation,
       classification,
       contentType,
@@ -41,7 +47,7 @@ exports.addBook = async (req, res, next) => {
       await session.abortTransaction();
       return res.status(409).json({ error: 'Book already exists' });
     }
-    // Add authors and subjects, and retrieve their ObjectIds 
+    // Add languages, series title, publisher, authors and subjects, and retrieve their ObjectIds 
     const savedAuthors = await addAuthors(session, authors, next);
     const authorIDs = savedAuthors.map(author => author._id);  // Extract author IDs
 
@@ -51,13 +57,20 @@ exports.addBook = async (req, res, next) => {
     const savedLanguages = await addLanguages(session, languages, next);
     const languageIDs = savedLanguages.map(language => language._id);  // Extract language IDs
 
+    var savedSeriesTitle;
+    if (seriesTitle) {
+      savedSeriesTitle = await addSeriesTitleFromBook(session, seriesTitle, next);
+    }
+
+    const savedPublisher = await automatedAddPublisher(session, publisher, next);
+
     // Create and save the book with referenced author and subject IDs
     const newBook = new Book({
       title,
       isbn,
       callNumber,
       publishedYear,
-      publisherID,
+      publisher,
       collation,
       classification,
       contentType,
@@ -67,6 +80,8 @@ exports.addBook = async (req, res, next) => {
       specialDetailInfo,
       statementOfResp,
       fileAttached,
+      publisher: savedPublisher._id,
+      seriesTitle: savedSeriesTitle ? savedSeriesTitle._id : null, // get series title ID
       languages: languageIDs, // Add the array of language IDs as references
       authors: authorIDs, // Add the array of author IDs as references
       subjects: subjectIDs // Add the array of subject IDs as references
