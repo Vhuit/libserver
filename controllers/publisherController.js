@@ -25,6 +25,12 @@ const Publisher = require('../models/publisher');
 
 exports.automatedAddPublisher = async (session, publisher, next) => {
     try {
+        if (!publisher) {
+            // publisher = new Publisher({
+            //     publisherName: 'Unknown'
+            // }); 
+            return null;
+        }
         const existingPublisher = await Publisher.findOne({
             publisherName: publisher.publisherName,
             publisherLocation: publisher.publisherLocation

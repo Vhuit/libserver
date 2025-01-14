@@ -73,6 +73,7 @@ exports.addSeriesTitle = async (req, res, next) => {
         });
 
         if (existingSeriesTitle) {
+            await session.abortTransaction();
             return res.status(400).json({ error: 'Series title already exists' });
         }
 
@@ -105,7 +106,8 @@ exports.addSeriesTitle = async (req, res, next) => {
 // Get all series titles
 exports.getAllSeriesTitles = async (req, res, next) => {
     try {
-        const seriesTitles = await SeriesTitle.find();
+        const seriesTitles = await SeriesTitle.find()
+            .populate('publisher', '_id publisherName')
         res.status(200).json(seriesTitles);
     } catch (error) {
         next(error);

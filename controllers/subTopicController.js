@@ -2,6 +2,28 @@ const { default: mongoose } = require('mongoose');
 const SubTopic = require('../models/subTopic');
 const { automatedTopic } = require('./topicController');
 
+// Automated Subtopi from Book controller
+exports.automatedSubTopic = async (session, subTopic, next) => {
+    const existing = await SubTopic.findOne({
+        subTopicName: subTopic.subTopicName
+    }).session(session);
+    if (existing) {
+        return existing;
+    }
+    const topicId = (await automatedTopic(session, subTopic.topic, next))._id;
+    const prepLabel = ((await SubTopic.find({
+        topic: topicId
+    })).length + 1).toString().padStart(3, '0');
+    const newSubTopic = new SubTopic({
+        subTopicName: subTopic.subTopicName,
+        subTopicDes: subTopic.subTopicDes,
+        subTopicLabel: prepLabel,
+        topic: topicId
+    });
+    const saved = newSubTopic.save({ session });
+    return saved;
+}
+
 // Add subtopic
 exports.addSubTopic = async (req, res, next) => {
     const session = await mongoose.startSession();
@@ -26,7 +48,7 @@ exports.addSubTopic = async (req, res, next) => {
             {
                 subTopicName: subTopic.subTopicName,
                 subTopicDes: subTopic.subTopicDes,
-                subTopicLable: prepLabel,
+                subTopicLabel: prepLabel,
                 topic: prepTopic._id
             }
         );
@@ -99,7 +121,7 @@ exports.updateSubTopic = async (req, res, next) => {
         }
         updating.subTopicName = body.subTopicName;
         updating.subTopicDes = body.subTopicDes;
-        updating.subTopicLable = body.subTopicLable;
+        updating.subTopicLabel = body.subTopicLable;
         updating.topic = body.topic;
         updating.updatedAt = Date.now();
         await updating.save();

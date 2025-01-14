@@ -4,7 +4,7 @@ const SeriesTitleSchema = new mongoose.Schema({
     seriesTitle: { type: String, required: true },
     seriesTitleDescription: { type: String },
     publishedYear: { type: String },
-    publisher: { type: mongoose.Schema.Types.ObjectId, ref: 'Publisher', required: false },
+    publisher: { type: mongoose.Schema.Types.ObjectId, ref: 'Publisher' },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 })

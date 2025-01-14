@@ -3,6 +3,7 @@
  * It imports all the routes and sets them up on the Express app.
  */
 
+// Import HTTP Routers
 const bookRoutes = require('../routes/bookRoutes');
 const authorRoutes = require('../routes/authorRoutes');
 const subjectRoutes = require('../routes/subjectRoutes');
@@ -12,6 +13,11 @@ const publisherRoutes = require('../routes/publisherRoutes');
 const seriesTitleRoutes = require('../routes/seriesTitleRoutes')
 const topicRoutes = require('../routes/topicRoutes');
 const subTopicRoutes = require('../routes/subTopicRoutes');
+const bookItemRoutes = require('../routes/bookItemRoutes');
+const roleRoutes = require('../routes/roleRoutes');
+const userRoutes = require('../routes/userRoutes');
+
+// Import global Error handler
 const { errorHandler } = require('../middleware/errorHandler');
 
 const express = require('express');
@@ -28,7 +34,11 @@ app.use('/pictures', pictureRoutes);
 app.use('/publishers', publisherRoutes);
 app.use('/series', seriesTitleRoutes);
 app.use('/topics', topicRoutes);
-app.use('/sub-top', subTopicRoutes);
+app.use('/s-top', subTopicRoutes);
+app.use('/b-items', bookItemRoutes);
+app.use('/roles', roleRoutes);
+app.use('/user', userRoutes);
+
 
 // Error handler
 app.use(errorHandler);

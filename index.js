@@ -24,5 +24,5 @@ app.use(morgan('dev')); // print HTTP requests in the terminal
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server is available at http://192.168.0.107:${PORT}`);
+    console.log(`Server is available at http://127.0.0.1:${PORT}`);
 });

@@ -6,6 +6,11 @@ exports.addAuthors = async (session, authors, next) => {
         // Loop through each author in the array and create new Author documents
         const savedAuthors = await Promise.all(
             authors.map(async (author) => {
+                if (!author) {
+                    author = new Author({
+                        authorName: 'Unknown'
+                    });
+                }
                 const existingAuthor = await Author.findOne({
                     authorName: author.authorName
                 }).session(session);
